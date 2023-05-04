@@ -1,0 +1,855 @@
+// AVL TREES
+
+#include<stdio.h>
+#include<stdlib.h>
+ 
+// structure of the tree node
+struct node
+{
+    int data;
+    struct node* left;
+    struct node* right;
+    int ht;
+};
+ 
+// global initialization of root node
+struct node* root = NULL;
+ 
+// function prototyping
+struct node* create(int);
+struct node* insert(struct node*, int);
+struct node* delete(struct node*, int);
+struct node* search(struct node*, int);
+struct node* rotate_left(struct node*);
+struct node* rotate_right(struct node*);
+int balance_factor(struct node*);
+int height(struct node*);
+void inorder(struct node*);
+void preorder(struct node*);
+void postorder(struct node*);
+ 
+int main()
+{
+    int user_choice, data;
+    char user_continue = 'y';
+    struct node* result = NULL;
+ 
+    while (user_continue == 'y' || user_continue == 'Y')
+    {
+        printf("\n\n------- AVL TREE --------\n");
+        printf("\n1. Insert");
+        printf("\n2. Delete");
+        printf("\n3. Search");
+        printf("\n4. Inorder");
+        printf("\n5. Preorder");
+        printf("\n6. Postorder");
+        printf("\n7. EXIT");
+ 
+        printf("\n\nEnter Your Choice: ");
+        scanf("%d", &user_choice);
+ 
+        switch(user_choice)
+        {
+            case 1:
+                printf("\nEnter data: ");
+                scanf("%d", &data);
+                root = insert(root, data);
+                break;
+ 
+            case 2:
+                printf("\nEnter data: ");
+                scanf("%d", &data);
+                root = delete(root, data);
+                break;
+ 
+            case 3:
+                printf("\nEnter data: ");
+                scanf("%d", &data);
+                result = search(root, data);
+                if (result == NULL)
+                {
+                    printf("\nNode not found!");
+                }
+                else
+                {
+                    printf("\n Node found");
+                }
+                break;
+            case 4:
+                inorder(root);
+                break;
+ 
+            case 5:
+                preorder(root);
+                break;
+ 
+            case 6:
+                postorder(root);
+                break;
+ 
+            case 7:
+                printf("\n\tProgram Terminated\n");
+                return 1;
+ 
+            default:
+                printf("\n\tInvalid Choice\n");
+        }
+ 
+        printf("\n\nDo you want to continue? ");
+        scanf(" %c", &user_continue);
+    }
+ 
+    return 0;
+}
+ 
+// creates a new tree node
+struct node* create(int data)
+{
+    struct node* new_node = (struct node*) malloc (sizeof(struct node));
+ 
+    // if a memory error has occurred
+    if (new_node == NULL)
+    {
+        printf("\nMemory can't be allocated\n");
+        return NULL;
+    }
+    new_node->data = data;
+    new_node->left = NULL;
+    new_node->right = NULL;
+    return new_node;
+}
+ 
+// rotates to the left
+struct node* rotate_left(struct node* root)
+{
+    struct node* right_child = root->right;
+    root->right = right_child->left;
+    right_child->left = root;
+ 
+    // update the heights of the nodes
+    root->ht = height(root);
+    right_child->ht = height(right_child);
+ 
+    // return the new node after rotation
+    return right_child;
+}
+ 
+// rotates to the right
+struct node* rotate_right(struct node* root)
+{
+    struct node* left_child = root->left;
+    root->left = left_child->right;
+    left_child->right = root;
+ 
+    // update the heights of the nodes
+    root->ht = height(root);
+    left_child->ht = height(left_child);
+ 
+    // return the new node after rotation
+    return left_child;
+}
+ 
+// calculates the balance factor of a node
+int balance_factor(struct node* root)
+{
+    int lh, rh;
+    if (root == NULL)
+        return 0;
+    if (root->left == NULL)
+        lh = 0;
+    else
+        lh = 1 + root->left->ht;
+    if (root->right == NULL)
+        rh = 0;
+    else
+        rh = 1 + root->right->ht;
+    return lh - rh;
+}
+ 
+// calculate the height of the node
+int height(struct node* root)
+{
+    int lh, rh;
+    if (root == NULL)
+    {
+        return 0;
+    }
+    if (root->left == NULL)
+        lh = 0;
+    else
+        lh = 1 + root->left->ht;
+    if (root->right == NULL)
+        rh = 0;
+    else
+        rh = 1 + root->right->ht;
+ 
+    if (lh > rh)
+        return (lh);
+    return (rh);
+}
+ 
+// inserts a new node in the AVL tree
+struct node* insert(struct node* root, int data)
+{
+    if (root == NULL)
+    {
+        struct node* new_node = create(data);
+        if (new_node == NULL)
+        {
+            return NULL;
+        }
+        root = new_node;
+    }
+    else if (data > root->data)
+    {
+        // insert the new node to the right
+        root->right = insert(root->right, data);
+ 
+        // tree is unbalanced, then rotate it
+        if (balance_factor(root) == -2)
+        {
+            if (data > root->right->data)
+            {
+                root = rotate_left(root);
+            }
+            else
+            {
+                root->right = rotate_right(root->right);
+                root = rotate_left(root);
+            }
+        }
+    }
+    else
+    {
+        // insert the new node to the left
+        root->left = insert(root->left, data);
+ 
+        // tree is unbalanced, then rotate it
+        if (balance_factor(root) == 2)
+        {
+            if (data < root->left->data)
+            {
+                root = rotate_right(root);
+            }
+            else
+            {
+                root->left = rotate_left(root->left);
+                root = rotate_right(root);
+            }
+        }
+    }
+    // update the heights of the nodes
+    root->ht = height(root);
+    return root;
+}
+ 
+// deletes a node from the AVL tree
+struct node * delete(struct node *root, int x)
+{
+    struct node * temp = NULL;
+ 
+    if (root == NULL)
+    {
+        return NULL;
+    } 
+ 
+    if (x > root->data)
+    {
+        root->right = delete(root->right, x);
+        if (balance_factor(root) == 2)
+        {
+            if (balance_factor(root->left) >= 0)
+            {
+                root = rotate_right(root);
+            }
+            else
+            {
+                root->left = rotate_left(root->left);
+                root = rotate_right(root);
+            }
+        }
+    }
+    else if (x < root->data)
+    {
+        root->left = delete(root->left, x);
+        if (balance_factor(root) == -2)
+        {
+            if (balance_factor(root->right) <= 0)
+            {
+                root = rotate_left(root);
+            }
+            else
+            {
+                root->right = rotate_right(root->right);
+                root = rotate_left(root);
+            }
+        }
+    }
+    else
+    {
+        if (root->right != NULL)
+        { 
+            temp = root->right;
+            while (temp->left != NULL)
+                temp = temp->left;
+ 
+            root->data = temp->data;
+            root->right = delete(root->right, temp->data);
+            if (balance_factor(root) == 2)
+            {
+                if (balance_factor(root->left) >= 0)
+                {
+                    root = rotate_right(root);
+                }
+                else
+                {
+                    root->left = rotate_left(root->left);
+                    root = rotate_right(root);
+                }
+            }
+        }
+        else
+        {
+            return (root->left);
+        }
+    }
+    root->ht = height(root);
+    return (root);
+}
+ 
+// search a node in the AVL tree
+struct node* search(struct node* root, int key)
+{
+    if (root == NULL)
+    {
+        return NULL;
+    }
+ 
+    if(root->data == key)
+    {
+        return root;
+    }
+ 
+    if(key > root->data)
+    {
+        search(root->right, key);
+    }
+    else
+    {
+        search(root->left, key);
+    } 
+}
+ 
+// inorder traversal of the tree
+void inorder(struct node* root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+ 
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+ 
+// preorder traversal of the tree
+void preorder(struct node* root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+ 
+    printf("%d ", root->data);
+    preorder(root->left);
+    preorder(root->right);
+}
+ 
+// postorder traversal of the tree
+void postorder(struct node* root)
+{
+    if (root == NULL)
+    {
+        return;
+    }
+ 
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d ", root->data);
+}
+
+// BINARY HEAP
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 20
+void maxheapify(int *, int, int);
+int* buildmaxheap(int *, int);
+void main()
+{
+    int i, t, n;
+	int *a = calloc(MAX, sizeof(int));
+    int *m = calloc(MAX, sizeof(int));
+    printf("Enter no of elements in the array\n");
+    scanf("%d", &n);
+    printf("Enter the array\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &a[i]);
+    }
+    m = buildmaxheap(a, n);
+    printf("The heap is\n");
+    for (t = 0; t < n; t++) {
+        printf("%d\n", m[t]);
+    }
+}
+int* buildmaxheap(int a[], int n)
+{
+    int heapsize = n;
+    int j;
+    for (j = n/2; j >= 0; j--) {
+        maxheapify(a, j, heapsize);
+    }
+    return a;
+}
+void maxheapify(int a[], int i, int heapsize)
+{
+    int temp, largest, left, right, k;
+    left = (2*i+1);
+    right = ((2*i)+2);
+    if (left >= heapsize)
+        return;
+    else {
+        if (left < (heapsize) && a[left] > a[i]) 
+            largest = left;
+        else
+            largest = i;
+        if (right < (heapsize) && a[right] > a[largest])  
+            largest = right;
+        if (largest != i) {
+            temp = a[i];
+            a[i] = a[largest];
+            a[largest] = temp;
+            maxheapify(a, largest, heapsize);
+        }
+    }
+}
+
+// MAX HEAP
+
+#include <malloc.h>
+#include <stdio.h>
+
+
+struct Heap {
+	int* arr;
+	int size;
+	int capacity;
+};
+
+
+typedef struct Heap heap;
+
+
+heap* createHeap(int capacity, int* nums);
+void insertHelper(heap* h, int index);
+void maxHeapify(heap* h, int index);
+int extractMax(heap* h);
+void insert(heap* h, int data);
+
+
+heap* createHeap(int capacity, int* nums)
+{
+	
+	heap* h = (heap*)malloc(sizeof(heap));
+
+	
+	if (h == NULL) {
+		printf("Memory error");
+		return NULL;
+	}
+	
+	h->size = 0;
+	h->capacity = capacity;
+
+	
+	h->arr = (int*)malloc(capacity * sizeof(int));
+
+	
+	if (h->arr == NULL) {
+		printf("Memory error");
+		return NULL;
+	}
+	int i;
+	for (i = 0; i < capacity; i++) {
+		h->arr[i] = nums[i];
+	}
+
+	h->size = i;
+	i = (h->size - 2) / 2;
+	while (i >= 0) {
+		maxHeapify(h, i);
+		i--;
+	}
+	return h;
+}
+
+
+void insertHelper(heap* h, int index)
+{
+
+	
+	int parent = (index - 1) / 2;
+
+	if (h->arr[parent] < h->arr[index]) {
+		
+		int temp = h->arr[parent];
+		h->arr[parent] = h->arr[index];
+		h->arr[index] = temp;
+
+		// Recursively calling maxHeapify_bottom_up
+		insertHelper(h, parent);
+	}
+}
+
+void maxHeapify(heap* h, int index)
+{
+	int left = index * 2 + 1;
+	int right = index * 2 + 2;
+	int max = index;
+
+	
+	if (left >= h->size || left < 0)
+		left = -1;
+	if (right >= h->size || right < 0)
+		right = -1;
+
+	
+	if (left != -1 && h->arr[left] > h->arr[max])
+		max = left;
+	if (right != -1 && h->arr[right] > h->arr[max])
+		max = right;
+
+	
+	if (max != index) {
+		int temp = h->arr[max];
+		h->arr[max] = h->arr[index];
+		h->arr[index] = temp;
+
+		
+		maxHeapify(h, max);
+	}
+}
+
+int extractMax(heap* h)
+{
+	int deleteItem;
+
+	
+	if (h->size == 0) {
+		printf("\nHeap id empty.");
+		return -999;
+	}
+
+	
+	deleteItem = h->arr[0];
+
+	
+	h->arr[0] = h->arr[h->size - 1];
+	
+	h->size--;
+
+	
+	maxHeapify(h, 0);
+	return deleteItem;
+}
+
+
+void insert(heap* h, int data)
+{
+
+	
+	if (h->size < h->capacity) {
+		
+		h->arr[h->size] = data;
+		
+		insertHelper(h, h->size);
+		
+		h->size++;
+	}
+}
+
+void printHeap(heap* h)
+{
+
+	for (int i = 0; i < h->size; i++) {
+		printf("%d ", h->arr[i]);
+	}
+	printf("\n");
+}
+
+void main()
+{
+	int arr[9] = {1,2,3,4,5,6,7,8,9};
+	heap* hp = createHeap(9, arr);
+
+	printHeap(hp);
+	extractMax(hp);
+	printHeap(hp);
+}
+
+// MIN HEAP
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// Declare a heap structure
+struct Heap {
+	int* arr;
+	int size;
+	int capacity;
+};
+
+
+typedef struct Heap heap;
+
+heap* createHeap(int capacity, int* nums);
+void insertHelper(heap* h, int index);
+void heapify(heap* h, int index);
+int extractMin(heap* h);
+void insert(heap* h, int data);
+
+
+heap* createHeap(int capacity, int* nums)
+{
+	
+	heap* h = (heap*)malloc(sizeof(heap));
+
+	
+	if (h == NULL) {
+		printf("Memory error");
+		return NULL;
+	}
+	
+	h->size = 0;
+	h->capacity = capacity;
+
+	
+	h->arr = (int*)malloc(capacity * sizeof(int));
+
+	
+	if (h->arr == NULL) {
+		printf("Memory error");
+		return NULL;
+	}
+	int i;
+	for (i = 0; i < capacity; i++) {
+		h->arr[i] = nums[i];
+	}
+
+	h->size = i;
+	i = (h->size - 2) / 2;
+	while (i >= 0) {
+		heapify(h, i);
+		i--;
+	}
+	return h;
+}
+
+
+void insertHelper(heap* h, int index)
+{
+
+	
+	int parent = (index - 1) / 2;
+
+	if (h->arr[parent] > h->arr[index]) {
+		
+		int temp = h->arr[parent];
+		h->arr[parent] = h->arr[index];
+		h->arr[index] = temp;
+
+		
+		insertHelper(h, parent);
+	}
+}
+
+void heapify(heap* h, int index)
+{
+	int left = index * 2 + 1;
+	int right = index * 2 + 2;
+	int min = index;
+
+	
+	if (left >= h->size || left < 0)
+		left = -1;
+	if (right >= h->size || right < 0)
+		right = -1;
+
+	
+	if (left != -1 && h->arr[left] < h->arr[index])
+		min = left;
+	if (right != -1 && h->arr[right] < h->arr[min])
+		min = right;
+
+	
+	if (min != index) {
+		int temp = h->arr[min];
+		h->arr[min] = h->arr[index];
+		h->arr[index] = temp;
+
+		
+		heapify(h, min);
+	}
+}
+
+int extractMin(heap* h)
+{
+	int deleteItem;
+
+	
+	if (h->size == 0) {
+		printf("\nHeap id empty.");
+		return -999;
+	}
+
+	
+	deleteItem = h->arr[0];
+
+	
+	h->arr[0] = h->arr[h->size - 1];
+	
+	h->size--;
+
+	
+	heapify(h, 0);
+	return deleteItem;
+}
+
+
+void insert(heap* h, int data)
+{
+
+	
+	if (h->size < h->capacity) {
+		
+		h->arr[h->size] = data;
+		
+		insertHelper(h, h->size);
+		
+		h->size++;
+	}
+}
+
+void printHeap(heap* h)
+{
+
+	for (int i = 0; i < h->size; i++) {
+		printf("%d ", h->arr[i]);
+	}
+	printf("\n");
+}
+
+int main()
+{
+	int arr[9] = { 9, 8, 7, 6, 5, 4, 3, 2, 1 };
+	heap* hp = createHeap(9, arr);
+
+	printHeap(hp);
+	extractMin(hp);
+	printHeap(hp);
+
+	return 0;
+}
+
+// HEAPIFY
+
+// Heap Sort in C
+
+#include <stdio.h>
+
+
+
+void swap(int* a, int* b)
+{
+
+	int temp = *a;
+
+	*a = *b;
+
+	*b = temp;
+}
+
+
+void heapify(int arr[], int N, int i)
+{
+	
+	int largest = i;
+
+	
+	int left = 2 * i + 1;
+
+	
+	int right = 2 * i + 2;
+
+	
+	if (left < N && arr[left] > arr[largest])
+
+		largest = left;
+
+	
+	if (right < N && arr[right] > arr[largest])
+
+		largest = right;
+
+	
+	if (largest != i) {
+
+		swap(&arr[i], &arr[largest]);
+
+		
+		heapify(arr, N, largest);
+	}
+}
+
+
+void heapSort(int arr[], int N)
+{
+
+	// Build max heap
+	for (int i = N / 2 - 1; i >= 0; i--)
+
+		heapify(arr, N, i);
+
+	
+	for (int i = N - 1; i >= 0; i--) {
+
+		swap(&arr[0], &arr[i]);
+
+		
+		heapify(arr, i, 0);
+	}
+}
+
+
+void printArray(int arr[], int N)
+{
+	for (int i = 0; i < N; i++)
+		printf("%d ", arr[i]);
+	printf("\n");
+}
+
+
+int main()
+{
+	int arr[] = { 12, 11, 13, 5, 6, 7 };
+	int N = sizeof(arr) / sizeof(arr[0]);
+
+	
+	heapSort(arr, N);
+	printf("Sorted array is\n");
+	printArray(arr, N);
+}
+
+
+
