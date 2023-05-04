@@ -1,0 +1,236 @@
+// BINARY SEARCH
+
+#include <stdio.h>  
+int binarySearch(int a[], int beg, int end, int val)    
+{    
+    int mid;    
+    if(end >= beg)     
+    {        mid = (beg + end)/2;    
+/* if the item to be searched is present at middle */  
+        if(a[mid] == val)    
+        {                 
+            return mid+1;    
+        }    
+            /* if the item to be searched is smaller than middle, then it can only be in left subarray */  
+        else if(a[mid] < val)     
+        {  
+            return binarySearch(a, mid+1, end, val);    
+        }    
+            /* if the item to be searched is greater than middle, then it can only be in right subarray */  
+        else     
+        {  
+            return binarySearch(a, beg, mid-1, val);    
+        }          
+    }    
+    return -1;     
+}   
+int main() {  
+  int a[] = {11, 14, 25, 30, 40, 41, 52, 57, 70}; // given array  
+  int val = 40; // value to be searched  
+  int n = sizeof(a) / sizeof(a[0]); // size of array  
+  int res = binarySearch(a, 0, n-1, val); // Store result  
+  printf("The elements of the array are - ");  
+  for (int i = 0; i < n; i++)  
+  printf("%d ", a[i]);   
+  printf("\nElement to be searched is - %d", val);  
+  if (res == -1)  
+  printf("\nElement is not present in the array");  
+  else  
+  printf("\nElement is present at %d position of array", res);  
+  return 0;  
+}  
+
+// MERGE SORT
+
+#include <stdio.h>  
+  
+/* Function to merge the subarrays of a[] */  
+void merge(int a[], int beg, int mid, int end)    
+{    
+    int i, j, k;  
+    int n1 = mid - beg + 1;    
+    int n2 = end - mid;    
+      
+    int LeftArray[n1], RightArray[n2]; //temporary arrays  
+      
+    /* copy data to temp arrays */  
+    for (int i = 0; i < n1; i++)    
+    LeftArray[i] = a[beg + i];    
+    for (int j = 0; j < n2; j++)    
+    RightArray[j] = a[mid + 1 + j];    
+      
+    i = 0; /* initial index of first sub-array */  
+    j = 0; /* initial index of second sub-array */   
+    k = beg;  /* initial index of merged sub-array */  
+      
+    while (i < n1 && j < n2)    
+    {    
+        if(LeftArray[i] <= RightArray[j])    
+        {    
+            a[k] = LeftArray[i];    
+            i++;    
+        }    
+        else    
+        {    
+            a[k] = RightArray[j];    
+            j++;    
+        }    
+        k++;    
+    }    
+    while (i<n1)    
+    {    
+        a[k] = LeftArray[i];    
+        i++;    
+        k++;    
+    }    
+      
+    while (j<n2)    
+    {    
+        a[k] = RightArray[j];    
+        j++;    
+        k++;    
+    }    
+}    
+  
+void mergeSort(int a[], int beg, int end)  
+{  
+    if (beg < end)   
+    {  
+        int mid = (beg + end) / 2;  
+        mergeSort(a, beg, mid);  
+        mergeSort(a, mid + 1, end);  
+        merge(a, beg, mid, end);  
+    }  
+}  
+  
+/* Function to print the array */  
+void printArray(int a[], int n)  
+{  
+    int i;  
+    for (i = 0; i < n; i++)  
+        printf("%d ", a[i]);  
+    printf("\n");  
+}  
+  
+int main()  
+{  
+    int a[] = { 12, 31, 25, 8, 32, 17, 40, 42 };  
+    int n = sizeof(a) / sizeof(a[0]);  
+    printf("Before sorting array elements are - \n");  
+    printArray(a, n);  
+    mergeSort(a, 0, n - 1);  
+    printf("After sorting array elements are - \n");  
+    printArray(a, n);  
+    return 0;  
+}  
+
+// QUICK SORT
+
+#include <stdio.h>  
+  
+int partition (int a[], int start, int end)  
+{  
+    int pivot = a[end];   
+    int i = (start - 1);  
+  
+    for (int j = start; j <= end - 1; j++)  
+    {  
+        // If current element is smaller than the pivot  
+        if (a[j] < pivot)  
+        {  
+            i++; // increment index of smaller element  
+            int t = a[i];  
+            a[i] = a[j];  
+            a[j] = t;  
+        }  
+    }  
+    int t = a[i+1];  
+    a[i+1] = a[end];  
+    a[end] = t;  
+    return (i + 1);  
+}  
+
+// STRASSEN'S MATRIX MULTIPLICATION
+
+#include<stdio.h>
+int main(){
+  int a[2][2], b[2][2], c[2][2], i, j;
+  int m1, m2, m3, m4 , m5, m6, m7;
+ 
+  printf("Enter the 4 elements of first matrix: ");
+  for(i = 0;i < 2; i++)
+      for(j = 0;j < 2; j++)
+           scanf("%d", &a[i][j]);
+ 
+  printf("Enter the 4 elements of second matrix: ");
+  for(i = 0; i < 2; i++)
+      for(j = 0;j < 2; j++)
+           scanf("%d", &b[i][j]);
+ 
+  printf("\nThe first matrix is\n");
+  for(i = 0; i < 2; i++){
+      printf("\n");
+      for(j = 0; j < 2; j++)
+           printf("%d\t", a[i][j]);
+  }
+ 
+  printf("\nThe second matrix is\n");
+  for(i = 0;i < 2; i++){
+      printf("\n");
+      for(j = 0;j < 2; j++)
+           printf("%d\t", b[i][j]);
+  }
+ 
+  m1= (a[0][0] + a[1][1]) * (b[0][0] + b[1][1]);
+  m2= (a[1][0] + a[1][1]) * b[0][0];
+  m3= a[0][0] * (b[0][1] - b[1][1]);
+  m4= a[1][1] * (b[1][0] - b[0][0]);
+  m5= (a[0][0] + a[0][1]) * b[1][1];
+  m6= (a[1][0] - a[0][0]) * (b[0][0]+b[0][1]);
+  m7= (a[0][1] - a[1][1]) * (b[1][0]+b[1][1]);
+ 
+  c[0][0] = m1 + m4- m5 + m7;
+  c[0][1] = m3 + m5;
+  c[1][0] = m2 + m4;
+  c[1][1] = m1 - m2 + m3 + m6;
+ 
+   printf("\nAfter multiplication using Strassen's algorithm \n");
+   for(i = 0; i < 2 ; i++){
+      printf("\n");
+      for(j = 0;j < 2; j++)
+           printf("%d\t", c[i][j]);
+   }
+ 
+   return 0;
+}
+  
+  
+void quick(int a[], int start, int end)  
+{  
+    if (start < end)  
+    {  
+        int p = partition(a, start, end);   
+        quick(a, start, p - 1);  
+        quick(a, p + 1, end);  
+    }  
+}  
+  
+ 
+void printArr(int a[], int n)  
+{  
+    int i;  
+    for (i = 0; i < n; i++)  
+        printf("%d ", a[i]);  
+}  
+int main()  
+{  
+    int a[] = { 24, 9, 29, 14, 19, 27 };  
+    int n = sizeof(a) / sizeof(a[0]);  
+    printf("Before sorting array elements are - \n");  
+    printArr(a, n);  
+    quick(a, 0, n - 1);  
+    printf("\nAfter sorting array elements are - \n");    
+    printArr(a, n);  
+      
+    return 0;  
+}  
