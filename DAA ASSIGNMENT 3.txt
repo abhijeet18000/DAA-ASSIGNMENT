@@ -1,0 +1,310 @@
+// LINEAR SEARCH
+
+#include <stdio.h>  
+int linearSearch(int a[], int n, int val) {  
+  // Going through array sequencially  
+  for (int i = 0; i < n; i++)  
+    {  
+        if (a[i] == val)  
+        return i+1;  
+    }  
+  return -1;  
+}  
+int main() {  
+  int a[] = {70, 40, 30, 11, 57, 41, 25, 14, 52}; // given array  
+  int val = 41; // value to be searched  
+  int n = sizeof(a) / sizeof(a[0]); // size of array  
+  int res = linearSearch(a, n, val); // Store result  
+  printf("The elements of the array are - ");  
+  for (int i = 0; i < n; i++)  
+  printf("%d ", a[i]);   
+  printf("\nElement to be searched is - %d", val);  
+  if (res == -1)  
+  printf("\nElement is not present in the array");  
+  else  
+  printf("\nElement is present at %d position of array", res);  
+  return 0;  
+}  
+
+//BINARY SEARCH
+
+#include <stdio.h>  
+int binarySearch(int a[], int beg, int end, int val)    
+{    
+    int mid;    
+    if(end >= beg)     
+    {        mid = (beg + end)/2;    
+/* if the item to be searched is present at middle */  
+        if(a[mid] == val)    
+        {                 
+            return mid+1;    
+        }    
+            /* if the item to be searched is smaller than middle, then it can only be in left subarray */  
+        else if(a[mid] < val)     
+        {  
+            return binarySearch(a, mid+1, end, val);    
+        }    
+            /* if the item to be searched is greater than middle, then it can only be in right subarray */  
+        else     
+        {  
+            return binarySearch(a, beg, mid-1, val);    
+        }          
+    }    
+    return -1;     
+}   
+int main() {  
+  int a[] = {11, 14, 25, 30, 40, 41, 52, 57, 70}; // given array  
+  int val = 40; // value to be searched  
+  int n = sizeof(a) / sizeof(a[0]); // size of array  
+  int res = binarySearch(a, 0, n-1, val); // Store result  
+  printf("The elements of the array are - ");  
+  for (int i = 0; i < n; i++)  
+  printf("%d ", a[i]);   
+  printf("\nElement to be searched is - %d", val);  
+  if (res == -1)  
+  printf("\nElement is not present in the array");  
+  else  
+  printf("\nElement is present at %d position of array", res);  
+  return 0;  
+}  
+
+// TERNARY SEARCH
+
+
+
+#include <stdio.h>
+
+
+int ternarySearch(int l, int r, int key, int ar[])
+{
+	if (r >= l) {
+
+		
+		int mid1 = l + (r - l) / 3;
+		int mid2 = r - (r - l) / 3;
+
+		
+		if (ar[mid1] == key) {
+			return mid1;
+		}
+		if (ar[mid2] == key) {
+			return mid2;
+		}
+
+		
+
+		if (key < ar[mid1]) {
+
+			
+			return ternarySearch(l, mid1 - 1, key, ar);
+		}
+		else if (key > ar[mid2]) {
+
+			
+			return ternarySearch(mid2 + 1, r, key, ar);
+		}
+		else {
+
+			
+			return ternarySearch(mid1 + 1, mid2 - 1, key, ar);
+		}
+	}
+
+	
+	return -1;
+}
+
+
+int main()
+{
+	int l, r, p, key;
+
+	
+	int ar[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+	
+	l = 0;
+
+	
+	r = 9;
+
+	
+	key = 5;
+
+	
+	p = ternarySearch(l, r, key, ar);
+
+	
+	printf("Index of %d is %d\n", key, p);
+
+	
+	key = 50;
+
+	
+	p = ternarySearch(l, r, key, ar);
+
+	
+	printf("Index of %d is %d", key, p);
+}
+
+// QUICK SORT
+
+#include <stdio.h>  
+/* function that consider last element as pivot,  
+place the pivot at its exact position, and place  
+smaller elements to left of pivot and greater  
+elements to right of pivot.  */  
+int partition (int a[], int start, int end)  
+{  
+    int pivot = a[end]; // pivot element  
+    int i = (start - 1);  
+  
+    for (int j = start; j <= end - 1; j++)  
+    {  
+        // If current element is smaller than the pivot  
+        if (a[j] < pivot)  
+        {  
+            i++; // increment index of smaller element  
+            int t = a[i];  
+            a[i] = a[j];  
+            a[j] = t;  
+        }  
+    }  
+    int t = a[i+1];  
+    a[i+1] = a[end];  
+    a[end] = t;  
+    return (i + 1);  
+}  
+  
+
+void quick(int a[], int start, int end) /* a[] = array to be sorted, start = Starting index, end = Ending index */  
+{  
+    if (start < end)  
+    {  
+        int p = partition(a, start, end); //p is the partitioning index  
+        quick(a, start, p - 1);  
+        quick(a, p + 1, end);  
+    }  
+}  
+  
+
+void printArr(int a[], int n)  
+{  
+    int i;  
+    for (i = 0; i < n; i++)  
+        printf("%d ", a[i]);  
+}  
+int main()  
+{  
+    int a[] = { 24, 9, 29, 14, 19, 27 };  
+    int n = sizeof(a) / sizeof(a[0]);  
+    printf("Before sorting array elements are - \n");  
+    printArr(a, n);  
+    quick(a, 0, n - 1);  
+    printf("\nAfter sorting array elements are - \n");    
+    printArr(a, n);  
+      
+    return 0;  
+}  
+
+// HEAP SORT
+
+#include <stdio.h>  
+  
+void heapify(int a[], int n, int i)  
+{  
+    int largest = i;   
+    int left = 2 * i + 1;   
+    int right = 2 * i + 2;  
+      
+    if (left < n && a[left] > a[largest])  
+        largest = left;  
+    
+    if (right < n && a[right] > a[largest])  
+        largest = right;  
+     
+    if (largest != i) {  
+          
+        int temp = a[i];  
+        a[i] = a[largest];  
+        a[largest] = temp;  
+          
+        heapify(a, n, largest);  
+    }  
+}  
+void heapSort(int a[], int n)  
+{  
+    for (int i = n / 2 - 1; i >= 0; i--)  
+        heapify(a, n, i);  
+      
+    for (int i = n - 1; i >= 0; i--) {  
+        
+        int temp = a[0];  
+        a[0] = a[i];  
+        a[i] = temp;  
+          
+        heapify(a, i, 0);  
+    }  
+}  
+ 
+void printArr(int arr[], int n)  
+{  
+    for (int i = 0; i < n; ++i)  
+    {  
+        printf("%d", arr[i]);  
+        printf(" ");  
+    }  
+          
+}  
+int main()  
+{  
+    int a[] = {48, 10, 23, 43, 28, 26, 1};  
+    int n = sizeof(a) / sizeof(a[0]);  
+    printf("Before sorting array elements are - \n");  
+    printArr(a, n);  
+    heapSort(a, n);  
+    printf("\nAfter sorting array elements are - \n");    
+    printArr(a, n);  
+    return 0;  
+}  
+
+// SELECTION SORT
+
+#include <stdio.h>  
+  
+void selection(int arr[], int n)  
+{  
+    int i, j, small;  
+      
+    for (i = 0; i < n-1; i++)   
+    {  
+        small = i;   
+          
+        for (j = i+1; j < n; j++)  
+        if (arr[j] < arr[small])  
+            small = j;  
+  
+    int temp = arr[small];  
+    arr[small] = arr[i];  
+    arr[i] = temp;  
+    }  
+}  
+  
+void printArr(int a[], int n)  
+{  
+    int i;  
+    for (i = 0; i < n; i++)  
+        printf("%d ", a[i]);  
+}  
+  
+int main()  
+{  
+    int a[] = { 12, 31, 25, 8, 32, 17 };  
+    int n = sizeof(a) / sizeof(a[0]);  
+    printf("Before sorting array elements are - \n");  
+    printArr(a, n);  
+    selection(a, n);  
+    printf("\nAfter sorting array elements are - \n");    
+    printArr(a, n);  
+    return 0;  
+}    
